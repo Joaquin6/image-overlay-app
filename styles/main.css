@@ -9,13 +9,13 @@
 	background-color: #ababab;
 }
 
-#editorContainer {
+#overlayEditorOverlayContainer {
 	display: block;
 	width: 480px;
 	height: 480px;
 }
 
-#editor {
+#overlayEditor {
 	display: block;
 	margin: 0 20px 20px 0;
 	border: 1px solid #4b4b4b;
