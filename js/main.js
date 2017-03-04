@@ -170,6 +170,28 @@ var tools = {
 	    }
 	    /** paint grayscale image back */
 	    context.putImageData(imgData, 0, 0);
+	},
+	sepia: function() {
+		/** get image data */
+		var imgData = context.getImageData(0, 0, editor.width, editor.height),
+			pxData = imgData.data,
+			length = pxData.length;
+
+		for (var x = 0; x < length; x += 4) {
+			/** convert to grayscale */
+			var r = pxData[x],
+				g = pxData[x + 1],
+				b = pxData[x + 2],
+				sepiaR = r * .393 + g * .769 + b * .189,
+				sepiaG = r * .349 + g * .686 + b * .168,
+				sepiaB = r * .272 + g * .534 + b * .131;
+			pxData[x] = sepiaR;
+			pxData[x + 1] = sepiaG;
+			pxData[x + 2] = sepiaB;
+		}
+
+		/** paint sepia image back */
+		context.putImageData(imgData, 0, 0);
 	}
 };
 
