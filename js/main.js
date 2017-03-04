@@ -151,6 +151,25 @@ var tools = {
 	            });
 	        }
 	    });
+	},
+	/** RGB Modification */
+	greyscale: function() {
+	    /** get image data */
+	    var imgData = context.getImageData(0, 0, editor.width, editor.height),
+	        pxData = imgData.data,
+	        length = pxData.length;
+	    for(var x = 0; x < length; x+=4) {
+	        /** convert to grayscale */
+	        var r = pxData[x],
+	            g = pxData[x + 1],
+	            b = pxData[x + 2],
+	            grey = r * .3 + g * .59 + b * .11;
+	        pxData[x] = grey;
+	        pxData[x + 1] = grey;
+	        pxData[x + 2] = grey;
+	    }
+	    /** paint grayscale image back */
+	    context.putImageData(imgData, 0, 0);
 	}
 };
 
