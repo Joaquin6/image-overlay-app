@@ -1,0 +1,12 @@
+extends layout
+block content
+	div#imageOverlayEditor
+		section#editorOverlayContainer
+			canvas#overlayEditor(width="480" height="480")
+		section#editorToolbar
+			a#save(href="/" title="Save") Save
+			a#rotateL(href="/" title="Rotate left") Rotate Left
+			a#rotateR(href="/" title="Rotate right") Rotate Right
+			a#resize(href="/" title="Resize") Resize
+			a#greyscale(href="/" title="Convert to grayscale") B&W
+			a#sepia(href="/" title="Convert to sepia tone") Sepia

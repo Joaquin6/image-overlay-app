@@ -1,16 +1,45 @@
+require('jquery-ui-dialog');
+require('jquery-ui-resizable');
+
+var editor = document.querySelector("#overlayEditor");
+var context = editor.getContext("2d");
+
+function convertImgToBase64(imageUrl, callback) {
+	var reader = new FileReader();
+	reader.responseType = "blob";
+    reader.onload = function(event) {
+       var res = event.target.result;
+       callback(res);
+    }
+    reader.readAsDataURL(imageUrl);
+}
+
+function handleImageSecurity(imageUrl) {
+	var xhr = new XMLHttpRequest();
+    xhr.open("GET", imageUrl, true);
+    xhr.responseType = "blob";
+    xhr.onload = function (e) {
+        console.log(this.response);
+        convertImgToBase64(this.response, function(res) {
+			return res;
+		});
+    };
+    xhr.send();
+}
+
 /**
  * To work with the canvas features we need to get a reference to its context.
  * @type  {Object}
  */
-var editor = document.getElementById("overlayEditor"),
-	context = editor.getContext("2d"),
+
 	/** create/load image */
-	image = $("<img/>", {
-		src: "images/graffiti.png",
-		load: function() {
-			context.drawImage(this, 0, 0);
-		}
-	});
+var image = $("<img/>", {
+	crossOrigin: "Anonymous",
+	src: "images/graffiti.png",
+	load: function() {
+		context.drawImage(this, 0, 0);
+	}
+});
 
 /**
  * Toolbar functionality
