@@ -1,3 +1,4 @@
+require('fsstyles');
 require('jquery-ui-dialog');
 require('jquery-ui-resizable');
 
