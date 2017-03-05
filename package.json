@@ -2,7 +2,7 @@
   "name": "image-overlay-app",
   "version": "0.0.1",
   "description": "Single page that can run in the browser that outputs canvas data.",
-  "main": "./bin/www",
+  "main": "./server/bin/www",
   "author": "Joaquin Briceno <joaquinbriceno1@gmail.com>",
   "license": "ISC",
   "homepage": "https://github.com/Joaquin6/image-overlay-app#readme",
