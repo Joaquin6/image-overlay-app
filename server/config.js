@@ -1,4 +1,5 @@
 module.exports = {
+    environment: "development",
 	port: 8080,
 	webpackDevServer: {
         proxy: {

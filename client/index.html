@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Image Overlay Application</title>
+        <meta name="description" content="Single page that can run in the browser that outputs canvas data.">
+		<meta name="author" content="Joaquin Briceno - joaquinbriceno.com">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <!-- Favicon -->
+        <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="libs/jquery-ui/jquery-ui.min.css">
+        <link rel="stylesheet" href="css/main.css">
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elementsand media queries -->
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	  		<script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+		<![endif]-->
+    </head>
+    <body>
+        <div class="container">
+            <div class="row row-offcanvas row-offcanvas-right" style="padding-top: 40px;">
+                <div class="col-xs-12 col-sm-9">
+                    <p class="pull-right visible-xs">
+                        <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+                    </p>
+                    <div id="imageOverlayEditor" class="row">
+                        <div id="stage-parent">
+                            <div id="editorOverlayContainer"></div>
+                        </div>
+                        <div id="editorToolbar" class="btn-group" role="group" aria-label="controls">
+                            <button id="save" type="button" class="btn btn-default" title="Save">Save</button>
+                            <button id="rotateL" type="button" class="btn btn-default" title="Rotate left">Rotate Left</button>
+                            <button id="rotateR" type="button" class="btn btn-default" title="Rotate right">Rotate Right</button>
+                            <button id="imageinfo" type="button" class="btn btn-default" title="Image Info">Image Info</button>
+                            <button id="canvasinfo" type="button" class="btn btn-default" title="Canvas Info">Canvas Info</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
+                    <div class="panel panel-default" data-spy="scroll" data-target="#editorInfo" style="position: relative;">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Activity Logs</h3>
+                        </div>
+                        <div id="editorInfo" class="panel-body" data-alertCount='0'></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="libs/jquery/jquery.min.js"></script>
+        <script src="libs/jquery-ui/jquery-ui.min.js"></script>
+        <script src="libs/konva/konva.min.js"></script>
+        <script src="libs/bootstrap/js/bootstrap.min.js"></script>
+        <script src="js/main.js"></script>
+    </body>
+</html>
