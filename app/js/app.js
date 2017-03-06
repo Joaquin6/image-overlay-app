@@ -1,4 +1,4 @@
-require('fsstyles');
+import 'appstyles';
 require('jquery-ui-dialog');
 require('jquery-ui-resizable');
 
