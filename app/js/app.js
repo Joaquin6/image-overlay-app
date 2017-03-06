@@ -1,4 +1,4 @@
-import 'appstyles';
+import 'sass/styles.scss';
 require('jquery-ui-dialog');
 require('jquery-ui-resizable');
 

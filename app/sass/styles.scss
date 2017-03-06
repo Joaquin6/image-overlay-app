@@ -1,45 +1,31 @@
-#imageOverlayEditor {
-	width: 482px;
-	margin: auto;
-	padding: 20px;
-	border: 1px solid #4b4b4b;
-	border-radius: 8px;
-	background-color: #ababab;
-}
+@charset "UTF-8";
 
-#overlayEditorOverlayContainer {
-	display: block;
-	width: 480px;
-	height: 480px;
-}
+@import "variables";
+@import "mixins";
 
-#overlayEditor {
-	display: block;
-	margin: 0 20px 20px 0;
-	border: 1px solid #4b4b4b;
-}
+@import "core/helpers";
+@import "core/widgets";
+@import "core/states";
+@import "core/icons";
+@import "core/corner";
 
-#editorToolbar {
-	display: block;
-	margin: 20px 0 0;
-}
+@import "components/draggable";
+@import "components/resizable";
+@import "components/selectable";
+@import "components/sortable";
 
-#editorToolbar a {
-	margin-right: 10px;
-	outline: none;
-	color: #4b4b4b;
-}
+@import "widgets/accordion";
+@import "widgets/autocomplete";
+@import "widgets/button";
+@import "widgets/buttonset";
+@import "widgets/datepicker";
+@import "widgets/dialog";
+@import "widgets/menu";
+@import "widgets/progressbar";
+@import "widgets/selectmenu";
+@import "widgets/slider";
+@import "widgets/spinner";
+@import "widgets/tabs";
+@import "widgets/tooltip";
 
-#resizer {
-	border: 2px dashed #000;
-}
-
-#tip {
-	padding: 5px;
-	margin: 0;
-	border: 1px solid #000;
-	border-radius: 3px;
-	position: absolute;
-	background-color: #fff;
-	box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-}
+@import "modules/base";

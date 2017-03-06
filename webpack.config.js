@@ -18,7 +18,9 @@ const DirectoryNamedWebpackPlugin = require("directory-named-webpack-plugin");
 
 // Create multiple instances
 const ExtractCSS = new ExtractTextPlugin('css/[name].css');
-const ExtractSass = new ExtractTextPlugin("sass/[name].scss");
+const ExtractSass = new ExtractTextPlugin("./css/[name].css");
+
+const isProd = environment === 'production';
 
 module.exports = {
 	context: contextPath,
@@ -26,15 +28,20 @@ module.exports = {
 	devServer: getDevServer(),
 	entry: getEntry(),
     stats: {
-      colors: {
-        green: '\u001b[32m',
-      }
+        colors: {
+            green: '\u001b[32m'
+        }
     },
 	resolve: getResolve(),
 	output: getOutput(),
 	watch: getWatchMode(),
 	module: getModule(),
-	plugins: getPlugins()
+	plugins: getPlugins(),
+    performance: isProd && {
+        maxAssetSize: 100,
+        maxEntrypointSize: 300,
+        hints: 'warning'
+    }
 };
 
 function readEnvironment() {
@@ -69,6 +76,23 @@ function getDevServer() {
             contentBase: './app',
             historyApiFallback: true,
             port: 8080,
+            compress: isProd,
+            inline: !isProd,
+            hot: !isProd,
+            stats: {
+                assets: true,
+                children: false,
+                chunks: false,
+                hash: false,
+                modules: false,
+                publicPath: false,
+                timings: true,
+                version: false,
+                warnings: true,
+                colors: {
+                    green: '\u001b[32m'
+                }
+            },
 			headers: {
 				"Access-Control-Allow-Origin": "http://localhost:8080",
 				"Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS",
@@ -90,7 +114,7 @@ function getWatchMode() {
 function getEntry() {
 	console.log('*** Webpack: Assigning ' + environment + ' Entry Points');
 	var entry = {
-        js: './js/app.js'
+        app: './js/app.js'
     };
 	return entry;
 }
@@ -116,7 +140,7 @@ function getOutput() {
 		 * localhost:3000/build. That makes proxying easier to handle
 		 * @type {String}
 		 */
-		output.publicPath = '/build/';
+		output.publicPath = '/release/';
 	} else
 		output.filename = 'build/bundle-[hash].js';
 	return output;
@@ -145,9 +169,9 @@ function getResolve() {
 			// This allows us to bring in either CSS for deployment or SASS for development
 			appstyles: appStylesPath + '/' + appStyles
 		},
-        extensions: ['.webpack-loader.js', '.web-loader.js', '.loader.js', '.js', '.jsx'],
+        extensions: ['.webpack-loader.js', '.web-loader.js', '.loader.js', '.js', '.jsx', '.css', '.scss'],
 		modules: [contextPath, path.resolve(__dirname, 'node_modules')],
-		mainFiles: ["index", "app"],
+		mainFiles: ["index", "app", "styles"],
 		plugins: [
 			new DirectoryNamedWebpackPlugin({
 				transformFn: function(dirName) {
@@ -176,16 +200,24 @@ function getModuleLoaders() {
 	var styleloaders = [{
 		loader: 'css-loader',
 		options: {
-			modules: true
+			modules: true,
+            sourceMap: true
 		}
 	}, {
 		loader: 'postcss-loader'
 	}, {
-		loader: 'sass-loader'
+		loader: 'sass-loader',
+        options: {
+            includePaths: [path.join(contextPath, 'sass')],
+            sourceMap: true
+        }
 	}];
 	var loaders = [{
 		test: /\.scss$/,
-		use: ['postcss-loader', 'sass-loader']
+		use: ExtractSass.extract({
+            fallback: 'style-loader',
+            use: styleloaders
+        })
 	}, {
 		test: /\.css$/,
 		use: ExtractTextPlugin.extract({
@@ -194,18 +226,25 @@ function getModuleLoaders() {
 		})
 	}, {
 		test: /\.pug$/,
-		use: 'pug-html-loader'
+		use: ['pug-html-loader']
 	}, {
 		test: /\.html$/,
-		use: 'raw-loader',
-		exclude: [nodeModulesPath]
+        exclude: /node_modules/,
+		use: [
+        'raw-loader',
+        {
+            loader: 'file-loader',
+            query: {
+                name: '[name].[ext]'
+            }
+        }]
 	}, {
 		test: /\.json$/,
-		use: 'json-loader'
+		use: ['json-loader']
 	}, {
-		test: /\.js$/,
-		use: 'babel-loader',
-		exclude: [nodeModulesPath]
+		test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: ['babel-loader']
 	}, {
 		test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
 		use: 'file-loader?/[path][name].[ext]?[hash]?limit=8192&mimetype=application/font-woff2'
@@ -214,7 +253,15 @@ function getModuleLoaders() {
 		use: 'file-loader?/[path][name].[ext]?[hash]?limit=8192&mimetype=application/font-woff'
 	}, {
 		test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-		use: 'file-loader?/[path][name].[ext]?[hash]?limit=8192&mimetype=application/octet-stream'
+        use: [{
+            loader: "file-loader",
+            query: {
+                name: "[path][name].[ext]",
+                hash: "[hash]",
+                limit: "8192",
+                mimetype: "application/octet-stream"
+            }
+        }]
 	}, {
 		test: /\.(jpe?g|png|gif)$/i,
 		use: 'file-loader?[path][name].[ext]'
@@ -241,6 +288,7 @@ function getModuleLoaders() {
 
 function getPlugins() {
 	var plugins = [
+        ExtractSass,
 		new ExtractTextPlugin('css/[name]-[hash].css'),
 		// We have to manually add the jquery global context due to MAC/Linux intergration env
 		new webpack.ProvidePlugin({
@@ -250,7 +298,16 @@ function getPlugins() {
 		}),
 		new webpack.LoaderOptionsPlugin({
 			debug: getDebugMode()
-		})
+		}),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            minChunks: Infinity,
+            filename: 'vendor.bundle.js'
+        }),
+        new webpack.EnvironmentPlugin({
+            NODE_ENV: environment,
+        }),
+        new webpack.NamedModulesPlugin()
 	];
 	if (environment === 'development') {
 		plugins.push(
@@ -277,10 +334,18 @@ function getPlugins() {
 			//     hash: true
 			// }),
 			new webpack.optimize.UglifyJsPlugin({
-				compressor: {
-					warnings: false,
-					screw_ie8: true
-				},
+				compress: {
+                    warnings: false,
+                    screw_ie8: true,
+                    conditionals: true,
+                    unused: true,
+                    comparisons: true,
+                    sequences: true,
+                    dead_code: true,
+                    evaluate: true,
+                    if_return: true,
+                    join_vars: true
+                },
 				output: {
 					comments: false
 				}
@@ -288,9 +353,6 @@ function getPlugins() {
 			new StatsPlugin('webpack.stats.json', {
 				source: false,
 				modules: false
-			}),
-			new webpack.DefinePlugin({
-				'process.env.NODE_ENV': environment
 			})
 		);
 	}

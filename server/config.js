@@ -7,8 +7,8 @@ module.exports = {
         filename: "bundle.js",
         // We need to tell webpack to serve our bundled application
         // from the build path. When proxying:
-        // http://localhost:1919/build -> http://localhost:8080/build
-        publicPath: '/build/',
+        // http://localhost:1919/release -> http://localhost:8080/release
+        publicPath: '/release/',
         // Configure hot replacement
         hot: true,
         // The rest is terminal configurations
