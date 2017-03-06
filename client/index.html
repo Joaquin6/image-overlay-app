@@ -31,12 +31,19 @@
                         <div id="stage-parent">
                             <div id="editorOverlayContainer"></div>
                         </div>
+                    </div>
+                    <div class="row btn-toolbar btn-toolbar-centered">
+                        <div class="form-group">
+                            <label for="exampleInputFile">Choose File</label>
+                            <input type="file" class="form-control-file" id="exampleInputFile" aria-describedby="fileHelp">
+                            <small id="fileHelp" class="form-text text-muted">Choose a .jpeg or .png image file</small>
+                        </div>
                         <div id="editorToolbar" class="btn-group" role="group" aria-label="controls">
-                            <button id="save" type="button" class="btn btn-default" title="Save">Save</button>
                             <button id="rotateL" type="button" class="btn btn-default" title="Rotate left">Rotate Left</button>
                             <button id="rotateR" type="button" class="btn btn-default" title="Rotate right">Rotate Right</button>
                             <button id="imageinfo" type="button" class="btn btn-default" title="Image Info">Image Info</button>
                             <button id="canvasinfo" type="button" class="btn btn-default" title="Canvas Info">Canvas Info</button>
+                            <button id="save" type="button" class="btn btn-default" title="Save">Save</button>
                         </div>
                     </div>
                 </div>

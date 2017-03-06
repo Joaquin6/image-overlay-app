@@ -4,12 +4,21 @@
  * but the real size will be different to fit user's page
  * so the stage will be 100% visible on any device
  */
+var image, importedImage;
+var editor = layer = new Konva.Layer();
+var context = editor.getContext("2d");
+var editorLogs = $("#editorInfo");
 var stageWidth = 1000;
 var stageHeight = 750;
 var stage = new Konva.Stage({
 	container: 'editorOverlayContainer',
 	width: stageWidth,
 	height: stageHeight
+});
+
+layer.on("click", function(e) {
+	console.log(e);
+	e.currentTarget.setAttr('active-image', e.target.name());
 });
 
 function fitStageIntoParentContainer() {
@@ -28,35 +37,45 @@ function fitStageIntoParentContainer() {
     refreshScrollspy();
 }
 
+function loadImageFile(url, imported) {
+	var imageObj = new Image();
+	imageObj.onload = function() {
+		var imgWidth = this.naturalWidth;
+		var imgHeight = this.naturalHeight;
+
+		var kImg;
+		var opts = {
+			x: 0,
+			y: 0,
+			image: imageObj,
+			width: imgWidth,
+			height: imgHeight,
+			draggable: true
+		};
+
+		/** create/load image */
+		if (imported) {
+			opts.name = "imported";
+			importedImage = kImg = new Konva.Image(opts);
+		} else {
+			opts.name = "graffiti";
+			image = kImg = new Konva.Image(opts);
+		}
+
+		/** add the shape to the layer */
+		layer.add(kImg);
+		layer.setAttr('active-image', opts.name);
+		/** add the layer to the stage */
+		stage.add(layer);
+	};
+	imageObj.src = url;
+}
+
 fitStageIntoParentContainer();
 /** adapt the stage on any window resize */
 window.addEventListener('resize', fitStageIntoParentContainer);
 
-var image;
-var editor = layer = new Konva.Layer();
-var imageObj = new Image();
-imageObj.onload = function() {
-	var imgWidth = this.naturalWidth;
-	var imgHeight = this.naturalHeight;
-
-	/** create/load image */
-	image = new Konva.Image({
-		x: 0,
-		y: 0,
-		image: imageObj,
-		width: imgWidth,
-		height: imgHeight,
-		draggable: true
-	});
-
-	/** add the shape to the layer */
-	layer.add(image);
-	/** add the layer to the stage */
-	stage.add(layer);
-};
-imageObj.src = 'images/graffiti.png';
-var context = editor.getContext("2d");
-var editorLogs = $("#editorInfo");
+loadImageFile('images/graffiti.png');
 
 /**
  * Toolbar functionality
@@ -79,13 +98,12 @@ var tools = {
 	rotate: function(conf, node) {
 		logDetails(node);
 		editor.clear();
-
 		/** rotate canvas */
-		context.clearRect(0, 0, editor.getWidth(), editor.getHeight());
+        context.clearRect(0, 0, editor.getWidth(), editor.getHeight());
         context.translate(conf.x, conf.y);
         context.rotate(conf.r);
-        /** redraw saved image */
-        context.drawImage(node.image(), 0, 0);
+
+		node.draw();
 	},
 	rotateL: function() {
 		console.log("\nRotate Left");
@@ -96,7 +114,7 @@ var tools = {
 	    };
 	    if (!editor.children)
 	    	return;
-	    var node = editor.children[0];
+	    var node = getActiveImageNode();
 	    tools.rotate(conf, node);
 	},
 	rotateR: function() {
@@ -108,7 +126,7 @@ var tools = {
 	    };
 	    if (!editor.children)
 	    	return;
-	    var node = editor.children[0];
+	    var node = getActiveImageNode();
 	    tools.rotate(conf, node);
 	},
 	/**
@@ -200,14 +218,28 @@ var tools = {
 	},
 	canvasinfo: function() {
 		logDetails(stage);
+	},
+	importFile: function(e) {
+		for (var i = 0, file; file = e.target.files[i]; i++) {
+			if (!file.type.match('image.*')) continue;
+
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				loadImageFile(e.target.result, true);
+			};
+
+			reader.readAsDataURL(file);
+		}
 	}
 };
 
 $("#editorToolbar").children().click(function(e) {
     e.preventDefault();
     /** call the relevant function */
-    tools[this.id].call(this);
+    tools[this.id].call(this, e);
 });
+
+$('#exampleInputFile').change(tools.importFile);
 
 function logDetails(node) {
 	var count = getAlertCount();
@@ -304,4 +336,15 @@ function refreshScrollspy() {
 	$('[data-spy="scroll"]').each(function () {
 		var $spy = $(this).scrollspy('refresh');
 	});
+}
+
+function getActiveImageNode() {
+	var activeImage = editor.getAttr('active-image');
+    var childImages = editor.getChildren();
+
+    for (var x = 0; x < childImages.length; x++) {
+    	if (childImages[x].name() === activeImage)
+    		return childImages[x];
+    }
+    return null;
 }
